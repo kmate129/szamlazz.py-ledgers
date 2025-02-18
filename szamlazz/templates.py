@@ -81,6 +81,14 @@ generate_invoice: str = """<?xml version="1.0" encoding="UTF-8"?>
             <afaErtek>{{ item.vat_amount }}</afaErtek>
             <bruttoErtek>{{ item.gross_amount }}</bruttoErtek>
             <megjegyzes>{{ item.comment_for_item }}</megjegyzes>
+            <tetelFokonyv>
+              <gazdasagiEsem>{{ item.item_ledger.economic_event }}</gazdasagiEsem>
+              <gazdasagiEsemAfa>{{ item.item_ledger.economic_event_tax }}</gazdasagiEsemAfa>
+              <arbevetelFokonyviSzam>{{ item.item_ledger.sales_ledger_number }}</arbevetelFokonyviSzam>
+              <afaFokonyviSzam>{{ item.item_ledger.vat_ledger_number }}</afaFokonyviSzam>
+              <elszDatumTol>{{ item.item_ledger.settlement_date_from }}</elszDatumTol>
+              <elszDatumIg>{{ item.item_ledger.settlement_date_to }}</elszDatumIg>
+            </tetelFokonyv>
         </tetel>
     {% endfor -%}
     </tetelek>
