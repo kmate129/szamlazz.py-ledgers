@@ -1,6 +1,5 @@
 import setuptools
 from datetime import datetime
-from szamlazz.version import get_git_version
 
 def read_version():
     with open("RELEASE-VERSION") as f:
