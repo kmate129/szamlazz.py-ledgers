@@ -2,6 +2,9 @@ import setuptools
 from datetime import datetime
 from szamlazz.version import get_git_version
 
+def read_version():
+    with open("RELEASE-VERSION") as f:
+        return f.read().strip()
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -9,7 +12,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="szamlazz.py",
-    version=get_git_version(),
+    version=read_version(),
     author='Kristof Daja (theriverman)',
     author_email='cowling_benzene0r@icloud.com',
     description='Python client for Szamlazz.hu :: Számla Agent',
