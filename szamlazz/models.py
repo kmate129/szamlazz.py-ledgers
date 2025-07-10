@@ -174,6 +174,7 @@ class SzamlazzResponse:
         if self.buyer_account_url:
             self.buyer_account_url = unquote(response.headers.get("szlahu_vevoifiokurl"))
         self.payment_method: str = response.headers.get("szlahu_fizetesmod")
+        self.payments = self.__extract_payments(ET.fromstring(self.__response.text), self.xml_namespace)
 
         self.__has_errors = self.error_code or self.error_message
         if self.has_errors:
@@ -244,3 +245,29 @@ class SzamlazzResponse:
     def __get_tag_text(self, root: ET.Element, tag_name):
         tag = root.find(f"{self.xml_namespace}{tag_name}")
         return tag.text if tag is not None else None
+ 
+    def __extract_payments(self, root: ET.Element, xml_namespace: str) -> list:
+        payments = []
+        ns = {"ns": xml_namespace[1:-1]}
+
+        for kifizetes in root.findall(".//ns:kifizetes", namespaces=ns):
+            datum = kifizetes.findtext("ns:datum", default="", namespaces=ns)
+            jogcim = kifizetes.findtext("ns:jogcim", default="", namespaces=ns)
+            osszeg_str = kifizetes.findtext("ns:osszeg", default="0", namespaces=ns)
+            megjegyzes = kifizetes.findtext("ns:megjegyzes", default="", namespaces=ns)
+            bankszamlaszam = kifizetes.findtext("ns:bankszamlaszam", default="", namespaces=ns)
+
+            try:
+                osszeg = int(osszeg_str)
+            except ValueError:
+                osszeg = 0
+
+            payments.append({
+                "date": datum,
+                "title": jogcim,
+                "amount": osszeg,
+                "note": megjegyzes,
+                "bank_account": bankszamlaszam
+            })
+
+        return payments
