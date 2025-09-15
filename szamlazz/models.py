@@ -174,6 +174,7 @@ class SzamlazzResponse:
         if self.buyer_account_url:
             self.buyer_account_url = unquote(response.headers.get("szlahu_vevoifiokurl"))
         self.payment_method: str = response.headers.get("szlahu_fizetesmod")
+        self.voided: bool = self.__extract_voided(ET.fromstring(self.__response.text), self.xml_namespace)
         self.payments = self.__extract_payments(ET.fromstring(self.__response.text), self.xml_namespace)
 
         self.__has_errors = self.error_code or self.error_message
@@ -271,3 +272,10 @@ class SzamlazzResponse:
             })
 
         return payments
+    
+    def __extract_voided(self, root: ET.Element, xml_namespace: str) -> bool:
+        ns = {"ns": xml_namespace[1:-1]}
+        sztornozott_szamla = root.find(".//ns:sztornozott", namespaces=ns)
+        if sztornozott_szamla is not None and sztornozott_szamla.text == "true":
+            return True
+        return False
